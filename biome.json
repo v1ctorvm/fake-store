@@ -58,17 +58,18 @@
     }
   },
   "javascript": {
-    "parser": {
-      "unsafeParameterDecoratorsEnabled": true
-    },
-    "formatter": {
-      "quoteStyle": "double",
-      "semicolons": "always"
-    },
-    "globals": [
-      "React"
-    ]
+  "parser": {
+    "unsafeParameterDecoratorsEnabled": true
   },
+  "formatter": {
+    "quoteStyle": "double",
+    "semicolons": "always"
+  },
+  "experimentalEmbeddedSnippetsEnabled": true,
+  "globals": [
+    "React"
+  ]
+},
   "assist": {
     "enabled": true,
     "actions": {
