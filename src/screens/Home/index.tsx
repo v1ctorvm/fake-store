@@ -1,12 +1,19 @@
 import { useEffect, useState } from "react";
-import { BottomBar } from "../../components/BottomBar";
-import { CategoryChip } from "../../components/CategoryChip";
-import { ProductCard } from "../../components/ProductCard";
+import { Text } from "react-native";
 import {
+  BottomBar,
+  BottomBarButton,
+  CategoryChip,
   CategoryList,
-  EmptyText,
+  CategoryText,
   Header,
+  ProductCard,
   ProductGrid,
+  ProductImage,
+  ProductInfo,
+  ProductPrice,
+  ProductRating,
+  ProductTitle,
   ScreenContainer,
   ScreenTitle,
   SearchInput,
@@ -16,6 +23,7 @@ export interface Product {
   id: number;
   title: string;
   price: number;
+  description: string;
   category: string;
   image: string;
   rating: {
@@ -26,11 +34,7 @@ export interface Product {
 
 export function Home() {
   const [products, setProducts] = useState<Product[]>([]);
-  const [categories, setCategories] = useState<string[]>(["Todos"]);
-  const [search, setSearch] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("Todos");
-  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
-  const [activeTab, setActiveTab] = useState("Inicio");
+  const [categories, setCategories] = useState<string[]>([]);
 
   useEffect(() => {
     async function loadProducts() {
@@ -39,92 +43,66 @@ export function Home() {
         .then((data) => setProducts(data));
     }
 
+    loadProducts();
+  }, []);
+
+  useEffect(() => {
     async function loadCategories() {
       await fetch("https://fakestoreapi.com/products/categories")
         .then((response) => response.json())
         .then((data) => setCategories(["Todos", ...data]));
     }
 
-    loadProducts();
     loadCategories();
   }, []);
 
-  function handleSelectCategory(category: string) {
-    setSelectedCategory(category);
-  }
-
-  function handleSelectProduct(product: Product) {
-    setSelectedProduct(product);
-    console.log("Produto selecionado:", product.title);
-  }
-
-  function handleChangeTab(tab: string) {
-    setActiveTab(tab);
-  }
-
-  const visibleProducts = products.filter((product) => {
-    const term = search.toLowerCase();
-
-    const sameCategory =
-      selectedCategory === "Todos" || product.category === selectedCategory;
-    const sameSearch = product.title.toLowerCase().includes(term);
-
-    return sameCategory && sameSearch;
-  });
-
   return (
-    <ScreenContainer>
+    <ScreenContainer edges={["top"]}>
       <Header>
-        <ScreenTitle>Loja</ScreenTitle>
-
-        <SearchInput
-          placeholder="Buscar produtos"
-          value={search}
-          onChangeText={setSearch}
-        />
-
+        <ScreenTitle>The Utimate Fake Store</ScreenTitle>
+        <SearchInput placeholder="Buscar Produtos..." />
         <CategoryList
-          data={categories}
           horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={{ paddingHorizontal: 20, gap: 10 }}
-          keyExtractor={(item) => item}
-          renderItem={({ item }) => (
-            <CategoryChip
-              name={item}
-              active={item === selectedCategory}
-              onPress={() => handleSelectCategory(item)}
-            />
+          data={categories}
+          renderItem={({ item }: { item: string }) => (
+            <CategoryChip>
+              <CategoryText>{item}</CategoryText>
+            </CategoryChip>
           )}
         />
       </Header>
-
       <ProductGrid
-        data={visibleProducts}
-        numColumns={2}
-        columnWrapperStyle={{ gap: 14 }}
-        contentContainerStyle={{ padding: 20, gap: 14 }}
-        keyExtractor={(item) => String(item.id)}
-        renderItem={({ item }) => {
-          const imageSource = { uri: item.image };
-
-          return (
-            <ProductCard
-              title={item.title}
-              price={item.price}
-              rate={item.rating.rate}
-              count={item.rating.count}
-              imageSource={imageSource}
-              onPress={() => handleSelectProduct(item)}
-            />
-          );
-        }}
-        ListEmptyComponent={() => (
-          <EmptyText>Nenhum produto encontrado</EmptyText>
+        data={products}
+        renderItem={({ item }: { item: Product }) => (
+          <ProductCard>
+            <ProductImage source={{ uri: item.image }} resizeMode="contain" />
+            <ProductInfo>
+              <ProductTitle>{item.title}</ProductTitle>
+              <ProductPrice>R$ {item.price}</ProductPrice>
+              <ProductRating>
+                {item.rating.rate} ({item.rating.count})
+              </ProductRating>
+            </ProductInfo>
+          </ProductCard>
         )}
+        keyExtractor={(item) => item.id.toString()}
+        numColumns={2}
       />
 
-      <BottomBar activeTab={activeTab} onChangeTab={handleChangeTab} />
+      <BottomBar>
+        <BottomBarButton>
+          <Text>Inicio</Text>
+        </BottomBarButton>
+        <BottomBarButton>
+          <Text>Buscar</Text>
+        </BottomBarButton>
+        <BottomBarButton>
+          <Text>Carrinho</Text>
+        </BottomBarButton>
+        <BottomBarButton>
+          <Text>Perfil</Text>
+        </BottomBarButton>
+      </BottomBar>
     </ScreenContainer>
   );
 }
