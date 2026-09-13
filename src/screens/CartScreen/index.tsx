@@ -1,5 +1,3 @@
-import { useState } from "react";
-
 import {
   BackButton,
   CartItem,
@@ -32,27 +30,18 @@ export type ProductItem = {
 
 type ProductItemProps = {
   items: ProductItem[];
+  onBack: () => void;
+  onChangeQuantity: (id: number, newQuantity: number) => void;
 };
 
-export function CartScreen({ items }: ProductItemProps) {
-  const [cartItems, setCartItems] = useState(items);
-
-  function changeQuantity(id: number, newQuantity: number) {
-    setCartItems((currentItems) =>
-      currentItems.map((product) =>
-        product.id === id
-          ? {
-              ...product,
-              quantity: Math.max(1, newQuantity),
-            }
-          : product,
-      ),
-    );
-  }
-
+export function CartScreen({
+  items,
+  onBack,
+  onChangeQuantity,
+}: ProductItemProps) {
   let subTotal = 0;
 
-  cartItems.forEach((item) => {
+  items.forEach((item) => {
     subTotal += item.price * item.quantity;
   });
 
@@ -62,13 +51,13 @@ export function CartScreen({ items }: ProductItemProps) {
   return (
     <ScreenContainer>
       <TopBar>
-        <BackButton>
+        <BackButton onPress={onBack}>
           <ScreenTitle>← Carrinho</ScreenTitle>
         </BackButton>
       </TopBar>
 
       <CartList
-        data={cartItems}
+        data={items}
         keyExtractor={(item) => item.id.toString()}
         showsVerticalScrollIndicator={false}
         renderItem={({ item }) => (
@@ -83,7 +72,7 @@ export function CartScreen({ items }: ProductItemProps) {
 
             <QuantityStepper>
               <QuantityButton
-                onPress={() => changeQuantity(item.id, item.quantity - 1)}
+                onPress={() => onChangeQuantity(item.id, item.quantity - 1)}
               >
                 <QuantityText>−</QuantityText>
               </QuantityButton>
@@ -91,7 +80,7 @@ export function CartScreen({ items }: ProductItemProps) {
               <QuantityText>{item.quantity}</QuantityText>
 
               <QuantityButton
-                onPress={() => changeQuantity(item.id, item.quantity + 1)}
+                onPress={() => onChangeQuantity(item.id, item.quantity + 1)}
               >
                 <QuantityText>+</QuantityText>
               </QuantityButton>

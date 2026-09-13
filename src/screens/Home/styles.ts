@@ -1,4 +1,5 @@
 import { FlatList } from "react-native";
+import type { FlatListProps } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import styled from "styled-components/native";
 import { Product } from ".";
@@ -30,9 +31,15 @@ export const SearchInput = styled.TextInput`
   padding: 8px;
 `;
 
-export const CategoryList = styled(FlatList)<string[]>``;
+export const CategoryList = styled(
+  FlatList as new (props: FlatListProps<string>) => FlatList<string>,
+)``;
 
-export const CategoryChip = styled.View`
+type CategoryTextProps = {
+  selected: boolean;
+};
+
+export const CategoryChip = styled.TouchableOpacity`
   margin-top: 10px;
   border-radius: 999px;
   background-color: #fdfdfd;
@@ -42,18 +49,20 @@ export const CategoryChip = styled.View`
   border-color: #00000076;
 `;
 
-export const CategoryText = styled.Text`
-  color: #000000;
+export const CategoryText = styled.Text<CategoryTextProps>`
+  color: ${({ selected }) => (selected ? "#136016" : "#000000")};
   font-size: 14px;
   font-weight: bold;
 `;
 
-export const ProductGrid = styled(FlatList as new () => FlatList<Product>)`
+export const ProductGrid = styled(
+  FlatList as new (props: FlatListProps<Product>) => FlatList<Product>,
+)`
   flex: 1;
   padding: 16px;
 `;
 
-export const ProductCard = styled.View`
+export const ProductCard = styled.TouchableOpacity`
   flex: 1;
   background-color: #fff;
   padding: 10px;
@@ -105,7 +114,7 @@ export const BottomBar = styled.View`
   flex-direction: row;
 `;
 
-export const BottomBarButton = styled.View`
+export const BottomBarButton = styled.TouchableOpacity`
   flex: 1;
   justify-content: center;
   align-items: center;

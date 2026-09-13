@@ -32,9 +32,25 @@ export interface Product {
   };
 }
 
-export function Home() {
+type HomeProps = {
+  onOpenCart: () => void;
+  onSelectProduct: (product: Product) => void;
+};
+
+export function Home({ onOpenCart, onSelectProduct }: HomeProps) {
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<string[]>([]);
+  const [search, setSearch] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("Todos");
+
+  const filteredProducts = products
+    .filter(
+      (product) =>
+        selectedCategory === "Todos" || product.category === selectedCategory,
+    )
+    .filter((product) =>
+      product.title.toLowerCase().includes(search.trim().toLowerCase()),
+    );
 
   useEffect(() => {
     async function loadProducts() {
@@ -60,21 +76,28 @@ export function Home() {
     <ScreenContainer edges={["top"]}>
       <Header>
         <ScreenTitle>The Utimate Fake Store</ScreenTitle>
-        <SearchInput placeholder="Buscar Produtos..." />
+        <SearchInput
+          placeholder="Buscar Produtos..."
+          value={search}
+          onChangeText={setSearch}
+        />
         <CategoryList
           horizontal
           data={categories}
-          renderItem={({ item }: { item: string }) => (
-            <CategoryChip>
-              <CategoryText>{item}</CategoryText>
+          keyExtractor={(item) => item}
+          renderItem={({ item }) => (
+            <CategoryChip onPress={() => setSelectedCategory(item)}>
+              <CategoryText selected={selectedCategory === item}>
+                {item}
+              </CategoryText>
             </CategoryChip>
           )}
         />
       </Header>
       <ProductGrid
-        data={products}
-        renderItem={({ item }: { item: Product }) => (
-          <ProductCard>
+        data={filteredProducts}
+        renderItem={({ item }) => (
+          <ProductCard onPress={() => onSelectProduct(item)}>
             <ProductImage source={{ uri: item.image }} resizeMode="contain" />
             <ProductInfo>
               <ProductTitle>{item.title}</ProductTitle>
@@ -96,7 +119,7 @@ export function Home() {
         <BottomBarButton>
           <Text>Buscar</Text>
         </BottomBarButton>
-        <BottomBarButton>
+        <BottomBarButton onPress={onOpenCart}>
           <Text>Carrinho</Text>
         </BottomBarButton>
         <BottomBarButton>

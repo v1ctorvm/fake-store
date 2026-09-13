@@ -1,45 +1,82 @@
+import { useState } from "react";
 import { SafeAreaProvider } from "react-native-safe-area-context";
-import { CartScreen } from "./src/screens/CartScreen";
+import { CartScreen, ProductItem } from "./src/screens/CartScreen";
+import { ProductDetail } from "./src/screens/ProductDetailsScreen";
+import { Home, Product } from "./src/screens/home";
 
-const ProductItem = [
-  {
-    id: 1,
-    title: "Mochila Fjallraven",
-    price: 109.95,
-    image:
-      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR7xpUYExTJNViqhmWukzR3bc0vahG4qKViQcyhl1KM-Q&s",
-    quantity: 1,
-  },
-  {
-    id: 2,
-    title: "Camiseta masculina",
-    price: 22.3,
-    image:
-      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR7xpUYExTJNViqhmWukzR3bc0vahG4qKViQcyhl1KM-Q&s",
-    quantity: 1,
-  },
-  {
-    id: 3,
-    title: "Camiseta masculina",
-    price: 22.3,
-    image:
-      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR7xpUYExTJNViqhmWukzR3bc0vahG4qKViQcyhl1KM-Q&s",
-    quantity: 1,
-  },
-  {
-    id: 4,
-    title: "Camiseta masculina",
-    price: 22.3,
-    image:
-      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR7xpUYExTJNViqhmWukzR3bc0vahG4qKViQcyhl1KM-Q&s",
-    quantity: 1,
-  },
-];
+type ScreenName = "home" | "detail" | "cart";
 
 export default function App() {
+  const [screen, setScreen] = useState<ScreenName>("home");
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const [cartItems, setCartItems] = useState<ProductItem[]>([]);
+
+  function openProductDetail(product: Product) {
+    setSelectedProduct(product);
+    setScreen("detail");
+  }
+
+  function addToCart(product: Product, quantity: number) {
+    setCartItems((currentItems) => {
+      const productAlreadyInCart = currentItems.find(
+        (item) => item.id === product.id,
+      );
+
+      if (productAlreadyInCart) {
+        return currentItems.map((item) =>
+          item.id === product.id
+            ? { ...item, quantity: item.quantity + quantity }
+            : item,
+        );
+      }
+
+      return [
+        ...currentItems,
+        {
+          id: product.id,
+          title: product.title,
+          price: product.price,
+          image: product.image,
+          quantity,
+        },
+      ];
+    });
+
+    setScreen("cart");
+  }
+
+  function changeCartQuantity(id: number, newQuantity: number) {
+    setCartItems((currentItems) =>
+      currentItems.map((item) =>
+        item.id === id ? { ...item, quantity: Math.max(1, newQuantity) } : item,
+      ),
+    );
+  }
+
   return (
     <SafeAreaProvider style={{ flex: 1, backgroundColor: "#000" }}>
-      <CartScreen items={ProductItem} />
+      {screen === "home" && (
+        <Home
+          onOpenCart={() => setScreen("cart")}
+          onSelectProduct={openProductDetail}
+        />
+      )}
+
+      {screen === "detail" && selectedProduct && (
+        <ProductDetail
+          product={selectedProduct}
+          onAddToCart={addToCart}
+          onBack={() => setScreen("home")}
+        />
+      )}
+
+      {screen === "cart" && (
+        <CartScreen
+          items={cartItems}
+          onBack={() => setScreen("home")}
+          onChangeQuantity={changeCartQuantity}
+        />
+      )}
     </SafeAreaProvider>
   );
 }

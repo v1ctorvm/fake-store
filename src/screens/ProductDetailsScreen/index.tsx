@@ -1,3 +1,5 @@
+import { useState } from "react";
+import { Product } from "../home";
 import {
   AddToCardText,
   AddToCartBar,
@@ -21,53 +23,67 @@ import {
   TopBar,
 } from "./sytles";
 
-export function ProductDetail() {
+type ProductDetailProps = {
+  product: Product;
+  onBack: () => void;
+  onAddToCart: (product: Product, quantity: number) => void;
+};
+
+export function ProductDetail({
+  product,
+  onBack,
+  onAddToCart,
+}: ProductDetailProps) {
+  const [quantity, setQuantity] = useState(1);
+
   return (
     <ScreenContainer>
       <TopBar>
-        <BackButton>
+        <BackButton onPress={onBack}>
           <ScreenTitle>← Detalhe</ScreenTitle>
         </BackButton>
       </TopBar>
 
       <DetailImage
         source={{
-          uri: "https://upload.wikimedia.org/wikipedia/pt/4/47/MISS%C3%83O_logo.png",
+          uri: product.image,
         }}
+        resizeMode="contain"
       />
 
       <DetailContent>
-        <CategoryLabel>Teste</CategoryLabel>
+        <CategoryLabel>{product.category}</CategoryLabel>
 
-        <DetailTitle>Mens Casual Premium Slim Fit T-Shirts</DetailTitle>
+        <DetailTitle>{product.title}</DetailTitle>
 
         <PriceRow>
-          <DetailPrice>$59,99</DetailPrice>
-          <RatingText>3.9 (120)</RatingText>
+          <DetailPrice>R$ {product.price.toFixed(2)}</DetailPrice>
+          <RatingText>
+            {product.rating.rate} ({product.rating.count})
+          </RatingText>
         </PriceRow>
 
-        <DetailDescription>
-          Esta é a descrição de teste do produto. Esta é a descrição de teste do
-          produto. Esta é a descrição de teste do produto.
-        </DetailDescription>
+        <DetailDescription>{product.description}</DetailDescription>
 
         <QuantityText>Quantidade</QuantityText>
 
         <QuantityStepper>
-          <StepperButton>
+          <StepperButton
+            onPress={() => setQuantity((current) => Math.max(1, current - 1))}
+          >
             <StepperText>-</StepperText>
           </StepperButton>
 
-          <QuantityValue>1</QuantityValue>
+          <QuantityValue>{quantity}</QuantityValue>
 
-          <StepperButton>
+          <StepperButton onPress={() => setQuantity((current) => current + 1)}>
             <StepperText>+</StepperText>
           </StepperButton>
         </QuantityStepper>
       </DetailContent>
 
       <AddToCartBar>
-        <AddToCartButton>
+        <AddToCartButton onPress={() => onAddToCart(product, quantity)}>
           <AddToCardText>Adicionar ao carrinho</AddToCardText>
         </AddToCartButton>
       </AddToCartBar>
