@@ -6,6 +6,7 @@ import {
   CartList,
   CartSummary,
   CheckoutButton,
+  CheckoutText,
   ItemImage,
   ItemInfo,
   ItemPrice,
@@ -55,7 +56,7 @@ export function CartScreen({ items }: ProductItemProps) {
     subTotal += item.price * item.quantity;
   });
 
-  const frete = subTotal * 0.1;
+  const frete = subTotal * 0.12;
   const total = subTotal + frete;
 
   return (
@@ -119,7 +120,9 @@ export function CartScreen({ items }: ProductItemProps) {
         </SummaryContainer>
       </CartSummary>
 
-      <CheckoutButton />
+      <CheckoutButton>
+        <CheckoutText>Finalizar Compra</CheckoutText>
+      </CheckoutButton>
     </ScreenContainer>
   );
 }

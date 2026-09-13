@@ -6,11 +6,11 @@ import { ProductItem } from ".";
 
 export const ScreenContainer = styled(SafeAreaView)`
   flex: 1;
-  background-color: #f35050;
+  background-color: #fff;
 `;
 
 export const TopBar = styled.View`
-  background-color: #addc9f;
+  background-color: #fff;
   padding-left: 12px;
 `;
 
@@ -23,7 +23,7 @@ export const ScreenTitle = styled.Text`
 `;
 
 export const CartList = styled(FlatList<ProductItem>)`
-  background-color: green;
+  background-color: #fff;
 `;
 
 export const CartItem = styled.View`
@@ -31,7 +31,7 @@ export const CartItem = styled.View`
   margin-left: 8px;
   margin-right: 12px;
   margin-top: 20px;
-  background-color: blue;
+  background-color: #fff;
   flex-direction: row;
 `;
 
@@ -112,6 +112,13 @@ export const SummaryValue = styled.Text`
 export const CheckoutButton = styled.TouchableOpacity`
   background-color: black;
   height: 60px;
-  border-radius: 20px;
+  border-radius: 10px;
   margin: 20px;
+  align-items: center;
+  justify-content: center;
+`;
+
+export const CheckoutText = styled.Text`
+  color: white;
+  font-size: 24px;
 `;
